@@ -28,12 +28,12 @@ public class ReadBuffer<T> {
 		return new Task<>(() -> {
 			Task<Optional<T>> reader;
 			try (var buffer = this.buffer.lock()) {
-				if (buffer.value.size() > 0) {
-					return Optional.ofNullable(buffer.value.remove(0));
+				if (buffer.get().size() > 0) {
+					return Optional.ofNullable(buffer.get().remove(0));
 				} else {
 					try (var readers = this.readers.lock()) {
 						reader = new Task<>();
-						readers.value.add(reader);
+						readers.get().add(reader);
 					}
 				}
 			}
@@ -46,13 +46,13 @@ public class ReadBuffer<T> {
 			try (var buffer = this.buffer.lock()) {
 				boolean shouldBuffer = true;
 				try (var readers = this.readers.lock()) {
-					if (readers.value.size() > 0) {
-						readers.value.remove(0).completed(Optional.ofNullable(value));
+					if (readers.get().size() > 0) {
+						readers.get().remove(0).completed(Optional.ofNullable(value));
 						shouldBuffer = false;
 					}
 				}
 				if (shouldBuffer) {
-					buffer.value.add(value);
+					buffer.get().add(value);
 				}
 			}
 			return null;
@@ -62,8 +62,8 @@ public class ReadBuffer<T> {
 	private Task<Void> _onReaderAwaiting() {
 		return new Task<>(() -> {
 			try (var listener = this._onReaderAwaiting.lock()) {
-				if (listener.value != null) {
-					listener.value.run(this).await();
+				if (listener.get() != null) {
+					listener.get().run(this).await();
 				}
 			}
 			return null;
