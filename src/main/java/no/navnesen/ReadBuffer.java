@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public class ReadBuffer<T> {
 
+	protected final Mutex<Boolean> cancelled = new Mutex<>(false);
 	protected final Mutex<List<T>> buffer = new Mutex<>(new ArrayList<>());
 	protected final Mutex<List<Task<Optional<T>>>> readers = new Mutex<>(new ArrayList<>());
 
@@ -26,6 +27,11 @@ public class ReadBuffer<T> {
 
 	public Task<Optional<T>> read() {
 		return new Task<>(() -> {
+			try (var cancelled = this.cancelled.lock()) {
+				if (cancelled.get()) {
+					return Optional.empty();
+				}
+			}
 			Task<Optional<T>> reader;
 			try (var buffer = this.buffer.lock()) {
 				if (buffer.get().size() > 0) {
@@ -41,8 +47,13 @@ public class ReadBuffer<T> {
 		});
 	}
 
-	public Task<Void> write(T value) {
+	public Task<Boolean> write(T value) {
 		return new Task<>(() -> {
+			try (var cancelled = this.cancelled.lock()) {
+				if (cancelled.get()) {
+					return false;
+				}
+			}
 			try (var buffer = this.buffer.lock()) {
 				boolean shouldBuffer = true;
 				try (var readers = this.readers.lock()) {
@@ -55,7 +66,7 @@ public class ReadBuffer<T> {
 					buffer.get().add(value);
 				}
 			}
-			return null;
+			return true;
 		});
 	}
 
