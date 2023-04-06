@@ -1,0 +1,45 @@
+*
+
+!/.gitignore
+
+# GitHub Workflows
+!/.github/
+!/.github/workflows/
+!/.github/workflows/*.yml
+
+# Gradle Wrapper
+!/gradle/
+!/gradle/wrapper/
+!/gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.properties
+!/gradlew.bat
+!/gradlew
+
+# Configurations
+!/settings.gradle
+!/build.gradle
+!/jitpack.yml
+!/README.md
+
+# Source
+!/src/
+
+# Source / Main
+!/src/main/
+!/src/main/java/
+!/src/main/java/**/
+!/src/main/java/**/*.java
+!/src/main/resources/
+!/src/main/resources/**/
+!/src/main/resources/**/*
+
+# Source / Test
+!/src/test/
+!/src/test/java/
+!/src/test/java/**/
+!/src/test/java/**/*.java
+!/src/test/resources/
+!/src/test/resources/**/
+!/src/test/resources/**/*
+
+**/.DS_Store

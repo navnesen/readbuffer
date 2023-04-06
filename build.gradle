@@ -1,0 +1,31 @@
+plugins {
+	id "java-library"
+	id "maven-publish"
+}
+
+group "no.navnesen"
+version "UNVERSIONED"
+
+repositories {
+	mavenCentral()
+	maven { url "https://jitpack.io" }
+}
+
+dependencies {
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+	implementation "no.navnesen:task:0.5.0"
+	implementation "no.navnesen:locked:0.4.0"
+}
+
+test {
+	useJUnitPlatform()
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			from components.java
+		}
+	}
+}
